@@ -1,6 +1,8 @@
 import { useRef, useEffect } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+import { useURLID } from "../../hooks/useURLID";
+import Comments from "./comments";
 
 function VideoPlayer(props) {
   const videoRef = useRef(null);
@@ -55,8 +57,9 @@ function VideoPlayer(props) {
 
 export default function watch() {
   const playerRef = useRef(null);
+  const vidId = useURLID();
   const videoLink =
-    "http://localhost:8000/uploads/courses/76e38418-3b86-45c1-aa7e-889236c6fd4c/index.m3u8";
+    `http://localhost:8000/uploads/courses/${vidId}/index.m3u8`;
   const videoPlayerOptions = {
     controls: true,
     responsive: true,
@@ -90,6 +93,7 @@ export default function watch() {
         options={videoPlayerOptions}
         onReady={handlePlayerReady}
       />
+      <Comments />
     </>
   );
 }

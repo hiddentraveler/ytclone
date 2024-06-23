@@ -1,66 +1,62 @@
 import { useEffect, useState } from "react";
 import Video from "../../components/video";
+import "./home.css"
 
 export default function Home() {
-  const [suggVids, setSuggVids] = useState([]);
-  const [searchVids, setSearchVids] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [homevids, setHomeVids] = useState([]);
 
   async function getvids() {
-    const url =
-      "https://youtube-v31.p.rapidapi.com/search?relatedToVideoId=7ghhRHRP6t4&part=id%2Csnippet&type=video&maxResults=50";
+    const url = "http://localhost:8000/";
+
     const options = {
+      mode: "cors",
       method: "GET",
       headers: {
-        "x-rapidapi-key": "217d05ac2emshe25a3a34c4cd222p10f685jsne44aedced40d",
-        "x-rapidapi-host": "youtube-v31.p.rapidapi.com",
+        "Content-Type": "application/json",
+        "Host": "http://localhost:8000/",
+        "Origin": "http://localhost:5173/"
       },
     };
 
-    const response = await fetch(url, options);
-    const result = await response.json();
-    console.log(result.items);
-    setSuggVids(result.items);
+    try {
+
+      const response = await fetch(url, options);
+      const result = await response.json()
+      setHomeVids(result);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  async function searchVidsFunc(searchTerm) {
-    const url = `https://youtube-v31.p.rapidapi.com/search?q=${searchTerm}&part=snippet%2Cid&regionCode=US&maxResults=50&order=date`;
-    const options = {
-      method: "GET",
-      headers: {
-        "x-rapidapi-key": "217d05ac2emshe25a3a34c4cd222p10f685jsne44aedced40d",
-        "x-rapidapi-host": "youtube-v31.p.rapidapi.com",
-      },
-    };
-
-    const response = await fetch(url, options);
-    const result = await response.json();
-    console.log(result.items);
-    setSearchVids(result.items);
+  function logOut() {
+    localStorage.removeItem('user');
+    location.replace('/login')
+  }
+  const user = JSON.parse(localStorage.getItem('user'))
+  if (!user) {
+    location.replace('/login')
   }
 
-  // useEffect(() => {
-  //   getvids()
-  // }, [])
+
+  useEffect(() => {
+    getvids()
+  }, [])
+
   return (
     <>
-      <div className="container">
-        <button onClick={getvids}>Recomendations</button>
-        {suggVids.map((vids) => (
-          <Video vids={vids} key={vids.id.videoId} />
-        ))}
-      </div>
-      <div className="container">
-        <input
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={() => searchVidsFunc(searchTerm)}>Search</button>
-        <div>
-          {searchVids.map((vids) => (
-            <Video vids={vids} key={vids.id.videoId} />
-          ))}
+
+      {!user ? "" : (
+        <div className="card">
+          <img src={user.avatar} alt={user.username} />
+          <h3>{user.username}</h3>
+          <p >{user.email}</p>
+          <button onClick={logOut}>Log Out</button>
         </div>
+      )}
+      <div className="container">
+        {homevids.map((vids) => (
+          <Video vids={vids} key={vids.vidId} />
+        ))}
       </div>
     </>
   );

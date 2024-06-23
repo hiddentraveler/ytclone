@@ -4,34 +4,52 @@ import { useURLID } from "../../hooks/useURLID";
 export default function Comments() {
   const vidId = useURLID();
   const [comments, setComments] = useState([]);
+  const [userComment, setUserComment] = useState("");
 
   console.log("vid id:" + vidId);
   console.log(vidId);
 
   async function getComment() {
-    const url = `https://youtube-v31.p.rapidapi.com/commentThreads?part=snippet&videoId=${vidId}&maxResults=100`;
+    const url = "http://localhost:8000/comments";
+
     const options = {
-      method: "GET",
+      mode: "cors",
+      method: "POST",
       headers: {
-        "x-rapidapi-key": "217d05ac2emshe25a3a34c4cd222p10f685jsne44aedced40d",
-        "x-rapidapi-host": "youtube-v31.p.rapidapi.com",
+        "Content-Type": "application/json",
+        "Host": "http://localhost:8000/",
+        "Origin": "http://localhost:5173/"
       },
+      body: JSON.stringify({
+        vidId: vidId,
+      })
     };
 
-    const response = await fetch(url, options);
-    const result = await response.json();
-    console.log(result.items);
-    setComments(result.items);
+    try {
+
+      const response = await fetch(url, options);
+      const result = await response.json()
+      console.log(result);
+      setComments(result);
+    } catch (e) {
+      console.log(e);
+    }
   }
+
+
+
   useEffect(() => {
     getComment(vidId);
   }, []);
 
   return (
-    <span>
-      {comments.map((comm) => (
-        <p key={comm.id}>{comm.snippet.topLevelComment.snippet.textDisplay}</p>
-      ))}
-    </span>
+    <>
+
+      <span>
+        {comments.map((comm) => (
+          <p key={comm.commentId}>{comm.comment}</p>
+        ))}
+      </span>
+    </>
   );
 }
