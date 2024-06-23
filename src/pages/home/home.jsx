@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Video from "../../components/video";
+import { Link } from "react-router-dom";
 import "./home.css"
 
 export default function Home() {
@@ -46,13 +47,21 @@ export default function Home() {
     <>
 
       {!user ? "" : (
-        <div className="card">
-          <img src={user.avatar} alt={user.username} />
-          <h3>{user.username}</h3>
-          <p >{user.email}</p>
-          <button onClick={logOut}>Log Out</button>
-        </div>
-      )}
+        <>
+          <div className="card">
+            <img src={user.avatar} alt={user.username} />
+            <h3>{user.username}</h3>
+            <p >{user.email}</p>
+            <button onClick={logOut}>Log Out</button>
+          </div>
+          <div className="card">
+            <Link to={'/upload'}>
+              <h3>Upload Video</h3>
+            </Link>
+          </div>
+        </>
+      )
+      }
       <div className="container">
         {homevids.map((vids) => (
           <Video vids={vids} key={vids.vidId} />
