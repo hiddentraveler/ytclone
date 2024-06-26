@@ -1,8 +1,10 @@
 import { useState } from "react";
+import "./upload.css"
 
 export default function Upload() {
 	const [title, setTitle] = useState("");
 	const [file, setFile] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const user = JSON.parse(localStorage.getItem('user'))
 	if (!user) {
 		location.replace('/login')
@@ -31,11 +33,14 @@ export default function Upload() {
 
 		try {
 
+			setLoading(true);
 			const response = await fetch(url, options);
 			const result = await response.json()
 			console.log(result);
+			setLoading(false);
 		} catch (e) {
 			console.log(e);
+			setLoading(false);
 		}
 	}
 
@@ -47,11 +52,21 @@ export default function Upload() {
 
 	return (
 		<>
-			<label htmlFor="title">Title: </label>
-			<input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} /><br />
-			<label htmlFor="file">File: </label>
-			<input type="file" id="file" onChange={handleFileChange} />
-			<button onClick={uploadFile}>Upload</button>
+			{loading ? (
+				<>
+					<div><h3>uploading</h3></div>
+					<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+				</>
+			) : (
+
+				<>
+					<label htmlFor="title">Title: </label>
+					<input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} /><br />
+					<label htmlFor="file">File: </label>
+					<input type="file" id="file" onChange={handleFileChange} />
+					<button onClick={uploadFile}>Upload</button>
+				</>
+			)}
 		</>
 	)
 }
